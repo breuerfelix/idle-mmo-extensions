@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "IdleMMO Market Helper",
+  "version": "1.0.0",
+  "description": "Add market value information to IdleMMO inventory items",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["https://web.idle-mmo.com/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "IdleMMO Market Helper"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://web.idle-mmo.com/inventory*"],
+      "js": ["chart.min.js", "content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["chart.min.js"],
+      "matches": ["https://web.idle-mmo.com/*"]
+    }
+  ]
+}

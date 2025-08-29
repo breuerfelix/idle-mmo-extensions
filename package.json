@@ -1,0 +1,21 @@
+{
+  "name": "idle-data",
+  "version": "1.0.0",
+  "description": "Data fetcher for IdleMMO API",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "fetch-items": "node main.js",
+    "ingest-items": "node ingest-items.js",
+    "fetch-market": "node market.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "mongodb": "^6.19.0",
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
