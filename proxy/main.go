@@ -31,8 +31,11 @@ func main() {
 		req.URL.Host = targetURL.Host
 		req.URL.Scheme = targetURL.Scheme
 		
-		// Log the request
-		log.Printf("Proxying %s %s to %s", req.Method, req.URL.Path, req.URL.String())
+		// Log the request with additional headers
+		userAgent := req.Header.Get("User-Agent")
+		accept := req.Header.Get("Accept")
+		log.Printf("Proxying %s %s to %s | User-Agent: %s | Accept: %s", 
+			req.Method, req.URL.Path, req.URL.String(), userAgent, accept)
 	}
 
 	// Custom error handler
