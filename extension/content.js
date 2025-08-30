@@ -143,8 +143,8 @@ async function fetchMarketDataOnce(itemId, tier) {
     );
 
     // Make actual API call once
-    //const apiUrl = `https://idle-proxy.felixbreuer.me/v1/item/${itemId}/market-history?tier=${tier}&type=listings`;
-    const apiUrl = `http://localhost:8080/v1/item/${itemId}/market-history?tier=${tier}&type=listings`;
+    const apiUrl = `https://idle-proxy.felixbreuer.me/v1/item/${itemId}/market-history?tier=${tier}&type=listings`;
+    //const apiUrl = `http://localhost:8080/v1/item/${itemId}/market-history?tier=${tier}&type=listings`;
     console.log("IdleMMO Market Helper: API URL:", apiUrl);
 
     const response = await fetch(apiUrl, {
@@ -275,26 +275,28 @@ function injectChartAnalysis(itemId, tier, data = null, error = null) {
     width: 100%;
     max-width: 1200px;
     margin: 20px auto;
-    background: rgba(17, 24, 39, 0.9);
-    border: 1px solid rgba(75, 85, 99, 0.5);
+    background: rgb(31, 41, 55);
+    border: 1px solid rgb(55, 65, 81);
     border-radius: 8px;
     padding: 20px;
     font-family: system-ui, -apple-system, sans-serif;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   `;
 
   marketAnalysisDiv.innerHTML = `
     <div style="margin-bottom: 20px;">
-      <h3 style="color: #f9fafb; margin: 0 0 15px 0; font-size: 18px; font-weight: 700;">Price Chart Analysis</h3>
+      <h3 style="color: rgb(243, 244, 246); margin: 0 0 15px 0; font-size: 18px; font-weight: 700;">Price Chart Analysis</h3>
     </div>
     <div style="display: flex; gap: 20px; margin-top: 20px;">
       <div style="flex: 1;">
-        <div style="height: 400px; background: rgba(31, 41, 55, 0.8); border-radius: 4px; padding: 10px;">
+        <h4 style="color: rgb(209, 213, 219); margin: 0 0 10px 0; font-size: 16px; font-weight: 600;">Historical Price Data</h4>
+        <div style="height: 400px; background: rgb(17, 24, 39); border: 1px solid rgb(55, 65, 81); border-radius: 6px; padding: 10px;">
           <canvas id="history-price-chart" style="width: 100%; height: 100%;"></canvas>
         </div>
       </div>
       <div style="flex: 1;">
-        <div style="height: 400px; background: rgba(31, 41, 55, 0.8); border-radius: 4px; padding: 10px;">
+        <h4 style="color: rgb(209, 213, 219); margin: 0 0 10px 0; font-size: 16px; font-weight: 600;">Recent Transactions</h4>
+        <div style="height: 400px; background: rgb(17, 24, 39); border: 1px solid rgb(55, 65, 81); border-radius: 6px; padding: 10px;">
           <canvas id="latest-sold-chart" style="width: 100%; height: 100%;"></canvas>
         </div>
       </div>
@@ -446,16 +448,16 @@ function createSingleChart(canvas, chartConfig) {
     title: {
       display: true,
       text: chartConfig.yAxisTitle,
-      color: "#f9fafb",
+      color: "rgb(209, 213, 219)",
     },
     ticks: {
-      color: "#d1d5db",
+      color: "rgb(156, 163, 175)",
       callback: function (value) {
         return value.toLocaleString();
       },
     },
     grid: {
-      color: "rgba(75, 85, 99, 0.3)",
+      color: "rgba(75, 85, 99, 0.4)",
     },
   };
 
@@ -526,12 +528,12 @@ function createSingleChart(canvas, chartConfig) {
         title: {
           display: true,
           text: chartConfig.title,
-          color: "#f9fafb",
+          color: "rgb(243, 244, 246)",
         },
         legend: {
           display: true,
           labels: {
-            color: "#f9fafb",
+            color: "rgb(209, 213, 219)",
           },
         },
       },
@@ -540,14 +542,14 @@ function createSingleChart(canvas, chartConfig) {
           title: {
             display: true,
             text: chartConfig.xAxisTitle,
-            color: "#f9fafb",
+            color: "rgb(209, 213, 219)",
           },
           ticks: {
-            color: "#d1d5db",
+            color: "rgb(156, 163, 175)",
             maxTicksLimit: chartConfig.maxXTicks || 10,
           },
           grid: {
-            color: "rgba(75, 85, 99, 0.3)",
+            color: "rgba(75, 85, 99, 0.4)",
           },
         },
         y: yAxisConfig,
@@ -559,7 +561,7 @@ function createSingleChart(canvas, chartConfig) {
 // Helper function to show "no data" message on canvas
 function showNoDataMessage(canvas, message) {
   const ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#f9fafb";
+  ctx.fillStyle = "rgb(209, 213, 219)";
   ctx.font = "16px system-ui";
   ctx.textAlign = "center";
   ctx.fillText(message, canvas.width / 2, canvas.height / 2);
@@ -614,8 +616,8 @@ async function createPriceChart(data, containerDiv) {
           {
             label: "Average Price",
             data: historyPrices,
-            borderColor: "rgb(75, 192, 192)",
-            backgroundColor: "rgba(75, 192, 192, 0.2)",
+            borderColor: "rgb(6, 182, 212)",
+            backgroundColor: "rgba(6, 182, 212, 0.1)",
             tension: 0.1,
             fill: true,
           },
@@ -659,8 +661,8 @@ async function createPriceChart(data, containerDiv) {
           {
             label: "Transaction Price",
             data: latestPrices,
-            borderColor: "rgb(255, 99, 132)",
-            backgroundColor: "rgba(255, 99, 132, 0.6)",
+            borderColor: "rgb(236, 72, 153)",
+            backgroundColor: "rgba(236, 72, 153, 0.1)",
             tension: 0.1,
             fill: true,
           },

@@ -2,3 +2,5 @@
 items
 items.json
 node_modules
+*.crx
+*.pem

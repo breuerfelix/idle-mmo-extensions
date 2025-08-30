@@ -1,59 +1,33 @@
-# IdleData
+# IdleMMO Market Helper Extension
 
-A Node.js script to fetch all items from the IdleMMO API using an alphabetical search approach.
+A Chrome browser extension that adds market value information to IdleMMO inventory items.
 
-## Setup
+## Installation
 
-1. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
-2. Set your API key in the `.env` file (already configured in this project)
+1. Open Chrome and go to `chrome://extensions/`
+2. Enable "Developer mode" in the top right
+3. Click "Load unpacked" and select the `extension` folder
+4. The extension should now appear in your extensions list
 
 ## Usage
 
-Run the script to fetch all items:
+1. Click the extension icon in your browser toolbar
+2. Enter your IdleMMO API key in the popup
+3. Navigate to `https://web.idle-mmo.com/inventory`
+4. When you select an item to inspect, the extension will add a "Market Value" field
 
-```bash
-npm start
-```
+## Features
 
-The script will:
+- Persistent API key storage using Chrome's sync storage
+- Automatic injection of market value information
+- Clean UI integration with IdleMMO's existing design
+- Dynamic content monitoring for single-page application compatibility
 
-- Search for items using each letter of the alphabet (a-z) as query parameters
-- Fetch all pages for each letter using pagination
-- Respect the 20 req/min rate limit (3 second delays between requests)
-- Save individual letter results to `items/a.json`, `items/b.json`, etc.
-- Combine and deduplicate all items into `items.json`
-- Display statistics about the fetched items
+## Development
 
-## Output Files
+The extension consists of:
 
-- **`items/`** - Directory containing individual letter search results (`a.json`, `b.json`, etc.)
-- **`items.json`** - Final deduplicated list of all unique items
-
-Each item contains:
-
-- `hashed_id` - Unique item identifier
-- `name` - Item name
-- `description` - Item description
-- `image_url` - Item image URL
-- `type` - Item type (weapon, shield, etc.)
-- `quality` - Item quality (COMMON, etc.)
-- `vendor_price` - Base vendor price
-
-## How It Works
-
-Since the API requires a search query, this script:
-
-1. Searches for items starting with each letter (a-z)
-2. Fetches all pages for each letter
-3. Saves results to individual JSON files
-4. Combines all files and removes duplicates based on `hashed_id`
-5. Outputs final statistics and saves to `items.json`
-
-## Rate Limiting
-
-The script automatically handles rate limiting by waiting 3 seconds between API calls to stay within the 20 requests per minute limit.
+- `manifest.json` - Extension configuration
+- `popup.html/js` - Settings popup for API key entry
+- `content.js` - Main script that injects market data
+- Icon files (placeholder for now)
