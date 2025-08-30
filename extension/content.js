@@ -143,7 +143,7 @@ async function fetchMarketDataOnce(itemId, tier) {
     );
 
     // Make actual API call once
-    const apiUrl = `http://localhost:8080/v1/item/${itemId}/market-history?tier=${tier}&type=listings`;
+    const apiUrl = `https://idle-proxy.felixbreuer.me/v1/item/${itemId}/market-history?tier=${tier}&type=listings`;
     console.log("IdleMMO Market Helper: API URL:", apiUrl);
 
     const response = await fetch(apiUrl, {

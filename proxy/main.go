@@ -52,7 +52,7 @@ func main() {
 		return nil
 	}
 
-	// Handle CORS preflight requests
+	// Handle CORS preflight requests and authentication
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "OPTIONS" {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -62,6 +62,35 @@ func main() {
 			return
 		}
 
+		// Check for authentication
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			log.Printf("Rejected request from %s: missing Authorization header", r.RemoteAddr)
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("Unauthorized: Missing Authorization header"))
+			return
+		}
+
+		// Check if it's a Bearer token starting with "idlemmo"
+		if len(authHeader) < 7 || authHeader[:7] != "Bearer " {
+			log.Printf("Rejected request from %s: invalid Authorization format", r.RemoteAddr)
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("Unauthorized: Invalid Authorization format"))
+			return
+		}
+
+		token := authHeader[7:] // Remove "Bearer " prefix
+		if len(token) < 7 || token[:7] != "idlemmo" {
+			log.Printf("Rejected request from %s: invalid token format", r.RemoteAddr)
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("Unauthorized: Invalid token format"))
+			return
+		}
+
+		log.Printf("Authenticated request from %s with token: %s...", r.RemoteAddr, token[:10])
 		proxy.ServeHTTP(w, r)
 	})
 
