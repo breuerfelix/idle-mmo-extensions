@@ -14,6 +14,9 @@ const (
 )
 
 func main() {
+	// Check if debug logging is enabled
+	debugLog := os.Getenv("DEBUG_LOG") != ""
+
 	// Parse the target URL
 	targetURL, err := url.Parse(idleMMOAPIBase)
 	if err != nil {
@@ -26,16 +29,18 @@ func main() {
 	// Custom director to modify the request
 	originalDirector := proxy.Director
 	proxy.Director = func(req *http.Request) {
-		// Log original request headers before modification
-		log.Printf("=== INCOMING REQUEST ===")
-		log.Printf("Method: %s, URL: %s", req.Method, req.URL.String())
-		log.Printf("Host header: %s", req.Host)
-		log.Printf("Remote address: %s", req.RemoteAddr)
-		
-		// Log all headers
-		for name, values := range req.Header {
-			for _, value := range values {
-				log.Printf("Header %s: %s", name, value)
+		if debugLog {
+			// Log original request headers before modification
+			log.Printf("=== INCOMING REQUEST ===")
+			log.Printf("Method: %s, URL: %s", req.Method, req.URL.String())
+			log.Printf("Host header: %s", req.Host)
+			log.Printf("Remote address: %s", req.RemoteAddr)
+			
+			// Log all headers
+			for name, values := range req.Header {
+				for _, value := range values {
+					log.Printf("Header %s: %s", name, value)
+				}
 			}
 		}
 		
@@ -58,33 +63,42 @@ func main() {
 		
 		req.Header.Set("User-Agent", "IdleProxy/0.0.1 (Contact: fbreuer@pm.me)")
 		
-		// Log the request with additional headers after modification
-		userAgent := req.Header.Get("User-Agent")
-		accept := req.Header.Get("Accept")
-		authorization := req.Header.Get("Authorization")
-		
-		log.Printf("=== OUTGOING REQUEST ===")
-		log.Printf("Proxying %s %s to %s", req.Method, req.URL.Path, req.URL.String())
-		log.Printf("Host: %s | User-Agent: %s | Accept: %s", req.Host, userAgent, accept)
-		log.Printf("Authorization: %s", authorization)
-		
-		// Log all outgoing headers
-		for name, values := range req.Header {
-			for _, value := range values {
-				log.Printf("Outgoing %s: %s", name, value)
+		if debugLog {
+			// Log the request with additional headers after modification
+			userAgent := req.Header.Get("User-Agent")
+			accept := req.Header.Get("Accept")
+			authorization := req.Header.Get("Authorization")
+			
+			log.Printf("=== OUTGOING REQUEST ===")
+			log.Printf("Proxying %s %s to %s", req.Method, req.URL.Path, req.URL.String())
+			log.Printf("Host: %s | User-Agent: %s | Accept: %s", req.Host, userAgent, accept)
+			log.Printf("Authorization: %s", authorization)
+			
+			// Log all outgoing headers
+			for name, values := range req.Header {
+				for _, value := range values {
+					log.Printf("Outgoing %s: %s", name, value)
+				}
 			}
+			log.Printf("=== END REQUEST LOG ===")
+		} else {
+			// Simple logging for normal operation
+			log.Printf("Proxying %s %s", req.Method, req.URL.Path)
 		}
-		log.Printf("=== END REQUEST LOG ===")
 	}
 
 	// Custom error handler
 	proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
-		log.Printf("=== PROXY ERROR ===")
-		log.Printf("Error: %v", err)
-		log.Printf("Request: %s %s", r.Method, r.URL.String())
-		log.Printf("Host: %s", r.Host)
-		log.Printf("Remote: %s", r.RemoteAddr)
-		log.Printf("=== END ERROR LOG ===")
+		if debugLog {
+			log.Printf("=== PROXY ERROR ===")
+			log.Printf("Error: %v", err)
+			log.Printf("Request: %s %s", r.Method, r.URL.String())
+			log.Printf("Host: %s", r.Host)
+			log.Printf("Remote: %s", r.RemoteAddr)
+			log.Printf("=== END ERROR LOG ===")
+		} else {
+			log.Printf("Proxy error for %s %s: %v", r.Method, r.URL.Path, err)
+		}
 		
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.WriteHeader(http.StatusBadGateway)
@@ -93,18 +107,24 @@ func main() {
 
 	// Custom response modifier
 	proxy.ModifyResponse = func(resp *http.Response) error {
-		// Log response details
-		log.Printf("=== RESPONSE FROM API ===")
-		log.Printf("Status: %d %s", resp.StatusCode, resp.Status)
-		log.Printf("Content-Type: %s", resp.Header.Get("Content-Type"))
-		log.Printf("Content-Length: %s", resp.Header.Get("Content-Length"))
-		
-		// Log rate limiting headers if present
-		if rateLimit := resp.Header.Get("X-RateLimit-Limit"); rateLimit != "" {
-			log.Printf("Rate Limit: %s", rateLimit)
-		}
-		if rateRemaining := resp.Header.Get("X-RateLimit-Remaining"); rateRemaining != "" {
-			log.Printf("Rate Remaining: %s", rateRemaining)
+		if debugLog {
+			// Log response details
+			log.Printf("=== RESPONSE FROM API ===")
+			log.Printf("Status: %d %s", resp.StatusCode, resp.Status)
+			log.Printf("Content-Type: %s", resp.Header.Get("Content-Type"))
+			log.Printf("Content-Length: %s", resp.Header.Get("Content-Length"))
+			
+			// Log rate limiting headers if present
+			if rateLimit := resp.Header.Get("X-RateLimit-Limit"); rateLimit != "" {
+				log.Printf("Rate Limit: %s", rateLimit)
+			}
+			if rateRemaining := resp.Header.Get("X-RateLimit-Remaining"); rateRemaining != "" {
+				log.Printf("Rate Remaining: %s", rateRemaining)
+			}
+			log.Printf("=== END RESPONSE LOG ===")
+		} else if resp.StatusCode >= 400 {
+			// Always log errors, even without debug mode
+			log.Printf("API response: %d %s", resp.StatusCode, resp.Status)
 		}
 		
 		// Add CORS headers
@@ -112,7 +132,6 @@ func main() {
 		resp.Header.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		resp.Header.Set("Access-Control-Allow-Headers", "Content-Type, Authorization, User-Agent")
 		
-		log.Printf("=== END RESPONSE LOG ===")
 		return nil
 	}
 
