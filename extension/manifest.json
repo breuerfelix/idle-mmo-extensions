@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "IdleMMO Market Helper",
-  "version": "1.0.0",
-  "description": "Add market value information to IdleMMO inventory items",
+  "version": "0.0.1",
+  "description": "Add market information to IdleMMO inventory items.",
   "permissions": ["storage", "activeTab"],
   "host_permissions": ["https://web.idle-mmo.com/*"],
   "action": {

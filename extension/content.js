@@ -126,14 +126,10 @@ function injectMarketValue() {
     tier,
   );
 
+  if (!apiKey) return;
+
   // Fetch market data once and use for both injections
-  if (apiKey) {
-    fetchMarketDataOnce(itemId, tier);
-  } else {
-    // Handle no API key case for both injections
-    injectMarketDataRows(itemId, tier, null);
-    injectChartAnalysis(itemId, tier, null);
-  }
+  fetchMarketDataOnce(itemId, tier);
 }
 
 // Function to fetch market data once and distribute to both UI components
@@ -153,7 +149,7 @@ async function fetchMarketDataOnce(itemId, tier) {
     const response = await fetch(apiUrl, {
       headers: {
         Authorization: `Bearer ${apiKey}`,
-        "User-Agent": "IdleData/1.0.0",
+        "User-Agent": "IdleMMO-Market-Helper/0.0.1 (Contact: fbreuer@pm.me)",
         Accept: "application/json",
       },
     });
