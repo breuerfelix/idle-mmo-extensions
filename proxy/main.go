@@ -44,6 +44,20 @@ func main() {
 		req.URL.Host = targetURL.Host
 		req.URL.Scheme = targetURL.Scheme
 		
+		// Clean up proxy headers that might cause issues
+		req.Header.Del("X-Request-Id")
+		req.Header.Del("X-Forwarded-Scheme")
+		req.Header.Del("X-Scheme")
+		req.Header.Del("X-Forwarded-For")
+		req.Header.Del("X-Forwarded-Host")
+		req.Header.Del("X-Forwarded-Proto")
+		req.Header.Del("X-Forwarded-Server")
+		req.Header.Del("X-Forwarded-Port")
+		req.Header.Del("X-Real-Ip")
+		req.Header.Del("X-Original-Forwarded-For")
+		
+		req.Header.Set("User-Agent", "IdleProxy/0.0.1 (Contact: fbreuer@pm.me)")
+		
 		// Log the request with additional headers after modification
 		userAgent := req.Header.Get("User-Agent")
 		accept := req.Header.Get("Accept")
